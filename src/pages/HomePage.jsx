@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropertySearch from '../components/property/PropertySearch';
 import PropertyList from '../components/property/PropertyList';
 import Loading from '../components/common/Loading';
+import { useAuth } from '../context/AuthContext';
 
 export default function HomePage() {
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { isAuthenticated } = useAuth();
+    const navigate = useNavigate();
 
     const handleSearch = async (searchParams) => {
+        // Check if user is authenticated before proceeding with search
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+        
         // TODO: Implement search functionality
         console.log('Search params:', searchParams);
         setSearchResults([]);
