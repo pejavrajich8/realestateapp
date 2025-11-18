@@ -1,7 +1,22 @@
 import React from 'react';
 
 export default function PropertyCard({ property }) {
-    const { image, price, title, location, description } = property;
+    // Map API fields to component fields
+    // Use a simple gray placeholder as data URI
+    const defaultImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%239ca3af"%3ENo Image%3C/text%3E%3C/svg%3E';
+    
+    const image = property.thumbnail_url || property.image || defaultImage;
+    const title = property.addressLine1 || property.address || 'Property';
+    const location = property.city && property.state 
+        ? `${property.city}, ${property.state}` 
+        : property.address || 'Location not specified';
+    const price = property.price ? `$${property.price.toLocaleString()}` : 'Price not available';
+    const bedrooms = property.bedrooms || 'N/A';
+    const bathrooms = property.bathrooms || 'N/A';
+    const squareFootage = property.squareFootage ? `${property.squareFootage.toLocaleString()} sq ft` : '';
+    const description = squareFootage 
+        ? `${bedrooms} bed, ${bathrooms} bath • ${squareFootage}`
+        : `${bedrooms} bed, ${bathrooms} bath`;
 
     return (
         <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 m-2 transition-shadow duration-300 hover:shadow-xl">
