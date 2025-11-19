@@ -1,12 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import PropertyDetails from '../components/property/PropertyDetails';
 import Loading from '../components/common/Loading';
+import { loadFromLocalStorage, LOCAL_STORAGE_KEYS } from '../utils/localStorage';
 
 export default function PropertyDetailsPage() {
     const { id } = useParams();
-    const loading = false;
-    const property = null; // TODO: Fetch property data using the id parameter
+    const [loading, setLoading] = useState(true);
+    const [property, setProperty] = useState(null);
+
+    useEffect(() => {
+        
+        const properties = loadFromLocalStorage(LOCAL_STORAGE_KEYS.PROPERTIES) || [];
+        console.log('All properties from localStorage:', properties);
+        console.log('Looking for property with id:', id);
+        
+        
+        const foundProperty = properties.find(p => p.id === id);
+        console.log('Found property:', foundProperty);
+        
+        setProperty(foundProperty);
+        setLoading(false);
+    }, [id]);
 
     if (loading) {
         return <Loading />;

@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 
 export default function PropertySearch({ onSearch }) {
     const [location, setLocation] = useState('');
+    const [state, setState] = useState('');
     const [priceRange, setPriceRange] = useState('');
     const [propertyType, setPropertyType] = useState('');
 
     const handleSearch = async (e) => {
         e.preventDefault();
         // TODO: Implement search functionality
-        console.log('Search submitted:', { location, priceRange, propertyType });
+        console.log('Search submitted:', { location, state, priceRange, propertyType });
         if (onSearch) {
-            onSearch({ location, priceRange, propertyType });
+            onSearch({ location, state, priceRange, propertyType });
         }
     };
 
@@ -19,9 +20,10 @@ export default function PropertySearch({ onSearch }) {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <input
                     type="text"
-                    placeholder="Location"
+                    placeholder="City, State (e.g., Los Angeles, CA)"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
+                    required
                     className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 />
                 <input
@@ -36,10 +38,14 @@ export default function PropertySearch({ onSearch }) {
                     onChange={(e) => setPropertyType(e.target.value)}
                     className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
                 >
-                    <option value="">Select Property Type</option>
-                    <option value="apartment">Apartment</option>
-                    <option value="house">House</option>
-                    <option value="condo">Condo</option>
+                    <option value="">All Property Types</option>
+                    <option value="Single Family">Single Family</option>
+                    <option value="Condo">Condo</option>
+                    <option value="Townhouse">Townhouse</option>
+                    <option value="Manufactured">Manufactured</option>
+                    <option value="Multi-Family">Multi-Family (2-4 units)</option>
+                    <option value="Apartment">Apartment (5+ units)</option>
+                    <option value="Land">Land</option>
                 </select>
                 <button 
                     type="submit" 

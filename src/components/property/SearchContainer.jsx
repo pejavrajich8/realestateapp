@@ -32,7 +32,14 @@ export default function SearchContainer({ hideInternalSearch = false }) {
             setError('API base URL is not defined');
             setLoading(false);
             return;
+        }
 
+        // Sanitize and validate location
+        const sanitizedLocation = location?.trim();
+        if (!sanitizedLocation) {
+            setError('Please enter a location (e.g., "Provo, UT" or "San Antonio, TX")');
+            setLoading(false);
+            return;
         }
 
         try {
@@ -66,16 +73,29 @@ export default function SearchContainer({ hideInternalSearch = false }) {
 
             const params = new URLSearchParams();
             // RentCast uses 'city' and 'state' parameters, not 'location'
-            if (location) {
-                // Try to split location into city and state
-                const locationParts = location.split(',').map(s => s.trim());
-                if (locationParts.length >= 2) {
-                    params.append('city', locationParts[0]);
-                    params.append('state', locationParts[1]);
+            // Sanitize and parse location input
+            const locationParts = sanitizedLocation.split(',').map(s => s.trim().replace(/\s+/g, ' '));
+            
+            if (locationParts.length >= 2) {
+                // Format: "City, State" or "City, State Abbreviation"
+                const city = locationParts[0];
+                const state = locationParts[1];
+                
+                if (city && state) {
+                    params.append('city', city);
+                    params.append('state', state);
                 } else {
-                    params.append('city', location);
+                    setError('Please enter location in format: "City, State" (e.g., "Provo, UT")');
+                    setLoading(false);
+                    return;
                 }
+            } else {
+                // State is required - show helpful error
+                setError('Please include the state. Format: "City, State" (e.g., "Los Angeles, CA" or "San Antonio, TX")');
+                setLoading(false);
+                return;
             }
+            
             if (minPrice) params.append('minPrice', minPrice);
             if (maxPrice) params.append('maxPrice', maxPrice);
             if (propertyType) params.append('propertyType', propertyType);
@@ -93,74 +113,6 @@ export default function SearchContainer({ hideInternalSearch = false }) {
             const res = await fetch(url, { headers });
 
             if (!res.ok) {
-                // If subscription is inactive, use mock data for development
-                if (res.status === 401) {
-                    console.warn('API subscription inactive - using mock data');
-                    const mockData = [
-                        {
-                            id: '1',
-                            formattedAddress: '123 Main St, Provo, UT 84601',
-                            addressLine1: '123 Main St',
-                            city: 'Provo',
-                            state: 'UT',
-                            zipCode: '84601',
-                            price: 450000,
-                            bedrooms: 3,
-                            bathrooms: 2,
-                            squareFootage: 1800,
-                            propertyType: 'Single Family'
-                        },
-                        {
-                            id: '2',
-                            formattedAddress: '456 Oak Ave, Provo, UT 84604',
-                            addressLine1: '456 Oak Ave',
-                            city: 'Provo',
-                            state: 'UT',
-                            zipCode: '84604',
-                            price: 525000,
-                            bedrooms: 4,
-                            bathrooms: 3,
-                            squareFootage: 2400,
-                            propertyType: 'Single Family'
-                        },
-                        {
-                            id: '3',
-                            formattedAddress: '789 Pine Dr, Provo, UT 84606',
-                            addressLine1: '789 Pine Dr',
-                            city: 'Provo',
-                            state: 'UT',
-                            zipCode: '84606',
-                            price: 380000,
-                            bedrooms: 3,
-                            bathrooms: 2.5,
-                            squareFootage: 1650,
-                            propertyType: 'Townhouse'
-                        }
-                    ];
-                    
-                    const mapped = mockData.map(item => ({
-                        id: item.id,
-                        address: item.formattedAddress,
-                        addressLine1: item.addressLine1,
-                        city: item.city,
-                        state: item.state,
-                        zipCode: item.zipCode,
-                        price: item.price,
-                        bedrooms: item.bedrooms,
-                        bathrooms: item.bathrooms,
-                        squareFootage: item.squareFootage,
-                        propertyType: item.propertyType
-                    }));
-                    
-                    setSearchResults(mapped);
-                    
-                    // Save mock results to localStorage
-                    saveToLocalStorage(LOCAL_STORAGE_KEYS.PROPERTIES, mapped);
-                    console.log('Saved mock data to localStorage:', mapped.length, 'properties');
-                    
-                    setLoading(false);
-                    return;
-                }
                 throw new Error(`Error: ${res.status} ${res.statusText}`);
             }
 
@@ -177,13 +129,27 @@ export default function SearchContainer({ hideInternalSearch = false }) {
                 city: item.city,
                 state: item.state,
                 zipCode: item.zipCode,
+                county: item.county,
+                latitude: item.latitude,
+                longitude: item.longitude,
                 price: item.price,
                 bedrooms: item.bedrooms,
                 bathrooms: item.bathrooms,
                 squareFootage: item.squareFootage,
                 lotSize: item.lotSize,
                 yearBuilt: item.yearBuilt,
-                propertyType: item.propertyType
+                propertyType: item.propertyType,
+                // Additional details
+                lastSaleDate: item.lastSaleDate,
+                lastSalePrice: item.lastSalePrice,
+                hoa: item.hoa,
+                features: item.features,
+                owner: item.owner,
+                ownerOccupied: item.ownerOccupied,
+                // Include image/photo URLs from the API
+                images: item.images || item.photos || [],
+                thumbnail_url: item.images?.[0] || item.photos?.[0] || item.photoUrl || item.imageUrl,
+                photoUrls: item.photoUrls || item.images || item.photos || []
             }));
 
             console.log('Mapped results:', mapped);
