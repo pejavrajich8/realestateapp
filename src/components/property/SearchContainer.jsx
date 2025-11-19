@@ -4,6 +4,7 @@ import PropertyList from './PropertyList';
 import Loading from '../common/Loading';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { saveToLocalStorage, LOCAL_STORAGE_KEYS } from '../../utils/localStorage';
 
 export default function SearchContainer({ hideInternalSearch = false }) {
     const [searchResults, setSearchResults] = useState([]);
@@ -152,6 +153,11 @@ export default function SearchContainer({ hideInternalSearch = false }) {
                     }));
                     
                     setSearchResults(mapped);
+                    
+                    // Save mock results to localStorage
+                    saveToLocalStorage(LOCAL_STORAGE_KEYS.PROPERTIES, mapped);
+                    console.log('Saved mock data to localStorage:', mapped.length, 'properties');
+                    
                     setLoading(false);
                     return;
                 }
@@ -182,6 +188,10 @@ export default function SearchContainer({ hideInternalSearch = false }) {
 
             console.log('Mapped results:', mapped);
             setSearchResults(mapped);
+            
+            // Save results to localStorage
+            saveToLocalStorage(LOCAL_STORAGE_KEYS.PROPERTIES, mapped);
+            console.log('Saved to localStorage:', mapped.length, 'properties');
         } catch (err) {
             setError(err?.message || 'An error occurred while fetching properties');
         } finally {

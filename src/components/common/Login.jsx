@@ -28,7 +28,8 @@ export default function Login() {
     
         }
         setLogin(true);
-        authLogin();
+        // Pass user data to authLogin so it can be saved to localStorage
+        authLogin({ email, loginTime: new Date().toISOString() });
         console.log("User logged in");
         navigate('/');
     };
@@ -36,7 +37,8 @@ export default function Login() {
     const handleCreateAccount = () => {
         if (emailValidation(email) && passwordValidation(password, confirmPassword)) {
             setLogin(true);
-            authLogin();
+            // Pass user data to authLogin so it can be saved to localStorage
+            authLogin({ email, createdAt: new Date().toISOString() });
             console.log("Account created");
             navigate('/');
         }

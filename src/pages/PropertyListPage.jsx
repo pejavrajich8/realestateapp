@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropertyList from '../components/property/PropertyList';
 import PropertySearch from '../components/property/PropertySearch';
 import Loading from '../components/common/Loading';
+import { saveToLocalStorage, loadFromLocalStorage, LOCAL_STORAGE_KEYS } from '../utils/localStorage';
 
 export default function PropertyListPage() {
-    const [properties, setProperties] = useState([]);
+    const [properties, setProperties] = useState(() => {
+        // Initialize state from localStorage
+        const savedProperties = loadFromLocalStorage(LOCAL_STORAGE_KEYS.PROPERTIES);
+        return savedProperties || [];
+    });
     const [loading, setLoading] = useState(false);
+
+    // Save properties to localStorage whenever they change
+    useEffect(() => {
+        saveToLocalStorage(LOCAL_STORAGE_KEYS.PROPERTIES, properties);
+    }, [properties]);
 
     const handleSearch = async (searchCriteria) => {
         // TODO: Implement search functionality
         console.log('Search criteria:', searchCriteria);
-        setProperties([]);
+        setLoading(true);
+        
+        // Simulate API call - replace with actual API call later
+        setTimeout(() => {
+            // When you implement real API, the results will be saved automatically
+            // Example: setProperties(apiResults);
+            setProperties([]);
+            setLoading(false);
+        }, 1000);
     };
 
     return (

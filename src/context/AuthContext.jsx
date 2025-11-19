@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+    saveUserToLocalStorage, 
+    loadUserFromLocalStorage, 
+    clearUserFromLocalStorage 
+} from '../utils/localStorage';
 
 const AuthContext = createContext();
 
@@ -14,6 +19,24 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
 
+    // Load user from localStorage on mount
+    useEffect(() => {
+        const savedUser = loadUserFromLocalStorage();
+        if (savedUser) {
+            setUser(savedUser);
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    // Save user to localStorage whenever user state changes
+    useEffect(() => {
+        if (user && isAuthenticated) {
+            saveUserToLocalStorage(user);
+        } else {
+            clearUserFromLocalStorage();
+        }
+    }, [user, isAuthenticated]);
+
     const login = (userData = null) => {
         setIsAuthenticated(true);
         setUser(userData);
@@ -22,6 +45,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setIsAuthenticated(false);
         setUser(null);
+        clearUserFromLocalStorage();
     };
 
     const value = {
