@@ -3,7 +3,7 @@ import {
     saveUserToLocalStorage, 
     loadUserFromLocalStorage, 
     clearUserFromLocalStorage 
-} from '../utils/localStorage';
+} from '../js/localStorage';
 
 const AuthContext = createContext();
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import PropertyDetails from '../components/property/PropertyDetails';
 import Loading from '../components/common/Loading';
-import { loadFromLocalStorage, LOCAL_STORAGE_KEYS } from '../utils/localStorage';
+import { loadFromLocalStorage, LOCAL_STORAGE_KEYS } from '../js/localStorage';
 
 export default function PropertyDetailsPage() {
     const { id } = useParams();

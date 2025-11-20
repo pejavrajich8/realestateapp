@@ -1,16 +1,8 @@
-/**
- * Utility functions for managing localStorage operations
- */
 const LOCAL_STORAGE_KEYS = {
     PROPERTIES: 'realEstateAppProperties',
     USER: 'realEstateAppUser',
 };
 
-/**
- * Save data to localStorage
- * @param {string} key - The key to store the data under
- * @param {any} data - The data to store (will be stringified)
- */
 export function saveToLocalStorage(key, data) {
     try {
         localStorage.setItem(key, JSON.stringify(data));
@@ -19,11 +11,6 @@ export function saveToLocalStorage(key, data) {
     }
 }
 
-/**
- * Load data from localStorage
- * @param {string} key - The key to retrieve the data from
- * @returns {any} The parsed data or null if not found
- */
 export function loadFromLocalStorage(key) {
     try {
         const data = localStorage.getItem(key);
@@ -34,10 +21,6 @@ export function loadFromLocalStorage(key) {
     }
 }
 
-/**
- * Remove data from localStorage
- * @param {string} key - The key to remove
- */
 export function removeFromLocalStorage(key) {
     try {
         localStorage.removeItem(key);
@@ -46,9 +29,6 @@ export function removeFromLocalStorage(key) {
     }
 }
 
-/**
- * Clear all data from localStorage
- */
 export function clearLocalStorage() {
     try {
         localStorage.clear();
@@ -59,7 +39,6 @@ export function clearLocalStorage() {
 
 export { LOCAL_STORAGE_KEYS };
 
-// User-specific localStorage functions for convenience
 export function saveUserToLocalStorage(user) {
     saveToLocalStorage(LOCAL_STORAGE_KEYS.USER, user);
 }

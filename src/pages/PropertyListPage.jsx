@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropertyList from '../components/property/PropertyList';
 import PropertySearch from '../components/property/PropertySearch';
 import Loading from '../components/common/Loading';
-import { saveToLocalStorage, loadFromLocalStorage, LOCAL_STORAGE_KEYS } from '../utils/localStorage';
+import { saveToLocalStorage, loadFromLocalStorage, LOCAL_STORAGE_KEYS } from '../js/localStorage';
 
 export default function PropertyListPage() {
     const [properties, setProperties] = useState(() => {
