@@ -18,17 +18,6 @@ export default function PropertyDetails({ property }) {
         }
     }
 
-
-    const defaultImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="400"%3E%3Crect width="800" height="400" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="32" fill="%239ca3af"%3ENo Image Available%3C/text%3E%3C/svg%3E';
-
-    // Get the property image
-    let propertyImage = defaultImage;
-    if (property.thumbnail_url) {
-        propertyImage = property.thumbnail_url;
-    } else if (property.image) {
-        propertyImage = property.image;
-    }
-
     // Get the property title
     let propertyTitle = 'Property Details';
     if (property.addressLine1) {
@@ -77,13 +66,6 @@ export default function PropertyDetails({ property }) {
                 {propertyTitle}
             </h1>
             
-        
-            <img 
-                src={propertyImage} 
-                alt={property.addressLine1 || 'Property'} 
-                className="w-full h-96 object-cover rounded-lg mb-6"
-            />
-            
        
             <div className="mb-6">
                 <p className="text-2xl text-blue-600 font-bold mb-2">{formatPrice(property.price)}</p>
@@ -121,6 +103,33 @@ export default function PropertyDetails({ property }) {
                     </p>
                 )}
             </div>
+
+            {/* Listing Information Section */}
+            {(property.daysOnMarket || property.listedDate || property.statusDate) && (
+                <div>
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b pb-2 mt-6">Listing Information</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        {property.daysOnMarket !== undefined && property.daysOnMarket !== null && (
+                            <p className="text-gray-700">
+                                <span className="font-medium">Days on Market:</span> 
+                                <span className="ml-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold">
+                                    {property.daysOnMarket} {property.daysOnMarket === 1 ? 'day' : 'days'}
+                                </span>
+                            </p>
+                        )}
+                        {property.listedDate && (
+                            <p className="text-gray-700">
+                                <span className="font-medium">Listed Date:</span> {new Date(property.listedDate).toLocaleDateString()}
+                            </p>
+                        )}
+                        {property.statusDate && (
+                            <p className="text-gray-700">
+                                <span className="font-medium">Status Updated:</span> {new Date(property.statusDate).toLocaleDateString()}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Sale History Section - only show if we have sale data */}
             {(property.lastSaleDate || property.lastSalePrice) && (

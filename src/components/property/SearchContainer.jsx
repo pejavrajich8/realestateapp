@@ -122,9 +122,14 @@ export default function SearchContainer({ hideInternalSearch = false }) {
 
             const response = await fetch(url, { headers: headers });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('API Error Response:', errorText);
+                console.error('Response status:', response.status);
+                console.error('Response statusText:', response.statusText);
                 throw new Error('Error: ' + response.status + ' ' + response.statusText + '. Details: ' + errorText);
             }
 
@@ -132,6 +137,11 @@ export default function SearchContainer({ hideInternalSearch = false }) {
             console.log('API Response:', data);
             console.log('API Response Type:', Array.isArray(data) ? 'Array' : typeof data);
             console.log('Number of results:', Array.isArray(data) ? data.length : 'N/A');
+            
+            // Log the structure of the response to understand it better
+            if (data && typeof data === 'object') {
+                console.log('Response object keys:', Object.keys(data));
+            }
             
             let rawResults = [];
             if (Array.isArray(data)) {
@@ -148,12 +158,36 @@ export default function SearchContainer({ hideInternalSearch = false }) {
             
             console.log('Extracted results array length:', rawResults.length);
 
-            const mappedResults = rawResults.map(function(item) {
+            const mappedResults = rawResults.map(function(item, index) {
+                // Debug: Log the first item to see what image fields are available
+                if (index === 0) {
+                    console.log('Sample property data:', item);
+                    console.log('Available image fields:', {
+                        images: item.images,
+                        photos: item.photos,
+                        photoUrl: item.photoUrl,
+                        photoUrls: item.photoUrls,
+                        imageUrl: item.imageUrl,
+                        thumbnail: item.thumbnail,
+                        thumbnailUrl: item.thumbnailUrl,
+                        thumbnail_url: item.thumbnail_url
+                    });
+                }
+
                 let thumbnailUrl = null;
-                if (item.images && item.images.length > 0) {
+                // Try various possible image field names from RentCast API
+                if (item.thumbnail_url) {
+                    thumbnailUrl = item.thumbnail_url;
+                } else if (item.thumbnailUrl) {
+                    thumbnailUrl = item.thumbnailUrl;
+                } else if (item.thumbnail) {
+                    thumbnailUrl = item.thumbnail;
+                } else if (item.images && item.images.length > 0) {
                     thumbnailUrl = item.images[0];
                 } else if (item.photos && item.photos.length > 0) {
                     thumbnailUrl = item.photos[0];
+                } else if (item.photoUrls && item.photoUrls.length > 0) {
+                    thumbnailUrl = item.photoUrls[0];
                 } else if (item.photoUrl) {
                     thumbnailUrl = item.photoUrl;
                 } else if (item.imageUrl) {
@@ -161,12 +195,15 @@ export default function SearchContainer({ hideInternalSearch = false }) {
                 }
 
                 let allImages = [];
-                if (item.images) {
+                if (item.images && Array.isArray(item.images)) {
                     allImages = item.images;
-                } else if (item.photos) {
+                } else if (item.photos && Array.isArray(item.photos)) {
                     allImages = item.photos;
-                } else if (item.photoUrls) {
+                } else if (item.photoUrls && Array.isArray(item.photoUrls)) {
                     allImages = item.photoUrls;
+                } else if (thumbnailUrl) {
+                    // If we have a thumbnail but no array, create an array with just the thumbnail
+                    allImages = [thumbnailUrl];
                 }
 
                 let fullAddress = item.formattedAddress;
@@ -193,6 +230,9 @@ export default function SearchContainer({ hideInternalSearch = false }) {
                     propertyType: item.propertyType,
                     lastSaleDate: item.lastSaleDate,
                     lastSalePrice: item.lastSalePrice,
+                    daysOnMarket: item.daysOnMarket,
+                    listedDate: item.listedDate || item.listDate,
+                    statusDate: item.statusDate,
                     hoa: item.hoa,
                     features: item.features,
                     owner: item.owner,

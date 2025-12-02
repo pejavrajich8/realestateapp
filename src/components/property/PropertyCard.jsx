@@ -11,8 +11,17 @@ export default function PropertyCard({ property }) {
     const defaultImage = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"%3E%3Crect width="400" height="300" fill="%23e5e7eb"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="24" fill="%239ca3af"%3ENo Image%3C/text%3E%3C/svg%3E';
     
     let image = defaultImage;
+    // Check multiple possible image field names
     if (property.thumbnail_url) {
         image = property.thumbnail_url;
+    } else if (property.thumbnailUrl) {
+        image = property.thumbnailUrl;
+    } else if (property.thumbnail) {
+        image = property.thumbnail;
+    } else if (property.images && property.images.length > 0) {
+        image = property.images[0];
+    } else if (property.photoUrls && property.photoUrls.length > 0) {
+        image = property.photoUrls[0];
     } else if (property.image) {
         image = property.image;
     }
