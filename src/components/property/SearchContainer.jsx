@@ -10,6 +10,7 @@ export default function SearchContainer({ hideInternalSearch = false }) {
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [activeFilters, setActiveFilters] = useState({});
 
     let API_BASE_URL = import.meta.env.VITE_RENTCAST_API_BASE_URL;
     if (!API_BASE_URL) {
@@ -31,6 +32,13 @@ export default function SearchContainer({ hideInternalSearch = false }) {
         setLoading(true);
         setError(null);
         setSearchResults([]);
+
+        // Store the active filters
+        setActiveFilters({
+            minPrice: minPrice || null,
+            maxPrice: maxPrice || null,
+            propertyType: propertyType || null
+        });
 
         console.log('API_KEY:', API_KEY ? 'Found' : 'Missing');
         console.log('API_BASE_URL:', API_BASE_URL);
@@ -217,7 +225,7 @@ export default function SearchContainer({ hideInternalSearch = false }) {
             
             {error && <div className="text-red-500 mt-4">{error}</div>}
             
-            {!loading && !error && <PropertyList properties={searchResults} />}
+            {!loading && !error && <PropertyList properties={searchResults} filters={activeFilters} />}
         </div>
     );  
 }

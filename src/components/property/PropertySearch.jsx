@@ -3,21 +3,22 @@ import React, { useState } from 'react';
 export default function PropertySearch({ onSearch }) {
     const [location, setLocation] = useState('');
     const [state, setState] = useState('');
-    const [priceRange, setPriceRange] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
     const [propertyType, setPropertyType] = useState('');
 
     const handleSearch = async (e) => {
         e.preventDefault();
         // TODO: Implement search functionality
-        console.log('Search submitted:', { location, state, priceRange, propertyType });
+        console.log('Search submitted:', { location, state, minPrice, maxPrice, propertyType });
         if (onSearch) {
-            onSearch({ location, state, priceRange, propertyType });
+            onSearch({ location, state, minPrice, maxPrice, propertyType });
         }
     };
 
     return (
         <form onSubmit={handleSearch} className="bg-white p-6 rounded-lg shadow-lg mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <input
                     type="text"
                     placeholder="City, State (e.g., Los Angeles, CA)"
@@ -27,10 +28,19 @@ export default function PropertySearch({ onSearch }) {
                     className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 />
                 <input
-                    type="text"
-                    placeholder="Price Range"
-                    value={priceRange}
-                    onChange={(e) => setPriceRange(e.target.value)}
+                    type="number"
+                    placeholder="Min Price"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    min="0"
+                    className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                />
+                <input
+                    type="number"
+                    placeholder="Max Price"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    min="0"
                     className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                 />
                 <select

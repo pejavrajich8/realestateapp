@@ -1,11 +1,11 @@
 import { Box, Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
     const navigate = useNavigate();
-    const { login: authLogin } = useAuth();
+    const { login: authLogin, isAuthenticated } = useAuth();
     const [login, setLogin] = useState(false);
     const [isCreateAccount, setIsCreateAccount] = useState(false);
     const [email, setEmail] = useState("");
@@ -13,6 +13,13 @@ export default function Login() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [emailError, setEmailError] = useState("");
+
+    // Redirect to home if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/');
+        }
+    }, [isAuthenticated, navigate]);
     
     const handleLogin = () => {
         // Basic checks for sign-in: email and password required
